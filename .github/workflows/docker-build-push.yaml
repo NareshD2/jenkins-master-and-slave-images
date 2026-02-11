@@ -3,7 +3,7 @@ name: Build and Push Master and Slave Docker Images
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-push-master-and-slave:
@@ -21,10 +21,10 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Step 3: Build Docker Image for 'master'
+      # Step 3: Build Docker Image for 'master' using the custom Dockerfile
       - name: Build Master Image
         run: |
-          docker build -f master/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/jenkins-master:latest master/
+          docker build -f ../master/docker/alpine/hotspot/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/jenkins-master:latest master/docker/alpine/hotspot/
 
       # Step 4: Push Master Docker Image to DockerHub
       - name: Push Master Image
@@ -33,7 +33,7 @@ jobs:
       # Step 5: Build Docker Image for 'slave'
       - name: Build Slave Image
         run: |
-          docker build -f slave/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/jenkins-slave:latest slave/
+          docker build -f ../slave/docker-agents/alpine/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/jenkins-slave:latest slave/
 
       # Step 6: Push Slave Docker Image to DockerHub
       - name: Push Slave Image
