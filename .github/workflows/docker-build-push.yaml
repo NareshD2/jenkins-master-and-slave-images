@@ -1,1 +1,40 @@
+name: Build and Push Master and Slave Docker Images
 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push-master-and-slave:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to DockerHub
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      # Step 3: Build Docker Image for 'master'
+      - name: Build Master Image
+        run: |
+          docker build -f master/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/jenkins-master:latest master/
+
+      # Step 4: Push Master Docker Image to DockerHub
+      - name: Push Master Image
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/jenkins-master:latest
+
+      # Step 5: Build Docker Image for 'slave'
+      - name: Build Slave Image
+        run: |
+          docker build -f slave/Dockerfile -t ${{ secrets.DOCKER_HUB_USERNAME }}/jenkins-slave:latest slave/
+
+      # Step 6: Push Slave Docker Image to DockerHub
+      - name: Push Slave Image
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/jenkins-slave:latest
